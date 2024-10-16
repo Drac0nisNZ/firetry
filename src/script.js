@@ -120,4 +120,23 @@ todoRef.on('value', (snapshot) => {
       })
     })
   });
+
+  // Create complete button
+  const completeBtn = document.createElement('i')
+  completeBtn.classList.add('fas', 'fa-check', 'complete')
+  completeBtn.addEventListener('click', (e) =>{
+    e.stopPropagation() //Prevents click from triggering other actions
+    //Toggle the comletion status of the todo item
+    todoRef.child(todoKey).update({
+      complete: !todoItem.completed,
+    })
+  })
+  //Create an undo button for completed tasks
+  const undoBtn = document.createElement('i')
+  undoBtn.classList.add('fas', 'fa-undo', 'undo-btn')
+  e.stopPropagation() // Prevent click from triggering any other actions
+  //Set task as incomplete
+  todoRef.child(todoKey).update({
+    complete: false
+  })
 });
