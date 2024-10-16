@@ -85,11 +85,39 @@ todoRef.on('value', (snapshot) => {
     todoContent.appendChild(statusIcon)
 
     // Display the todo text
-    const todoTextSpan = document.createElement('span')
-    todoTextSpan.textContent = `${todoItem.text}`
+    const todoTextSpan = document.createElement('span');
+    todoTextSpan.textContent = `${todoItem.text}`;
     if(todoItem.completed) {
-      todoTextSpan.classList.add('completed') // Style the text if completed
+      todoTextSpan.classList.add('completed'); // Style the text if completed
     }
     todoContent.appendChild(todoTextSpan);
+
+    // Create an edit button
+    const editBtn = document.createElement('i');
+    editBtn.classList.add('fas', 'fa-edit', 'edit-btn');
+    editBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent click from toggling completion
+      const editInput = document.createElement('input');
+      editInput.type = 'text';
+      editInput.classList.add('todo-input-edit');
+      editInput.value = todoItem.text
+      todoContent.replaceChild(editInput, todoTextSpan); // REplace text with input field
+      editInput.focus();
+
+      // When editing is complete (on losing focus)
+      editInput.addEventListener('blur', () => {
+        const updatedText = editInput.value.trim()
+        if(updatedText.length > 0) {
+          //Update the todo text and date in firebase
+          todoRef.child(todoKey).update({
+            text: updatedText,
+            date: new Date().toLocaleDateString()
+          }) 
+        } else {
+          //revert to original text if no valid input
+          todoContent.replaceChild(todoTextSpan, editInput)
+        }
+      })
+    })
   });
 });
